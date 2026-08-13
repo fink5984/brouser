@@ -136,6 +136,6 @@ docs/       architecture, deployment, testing, security docs
 ## Status / limitations
 
 - Tab state (scroll position, form field contents, back/forward history) does not survive a full app process death — only the tab's URL and title do. Switching tabs within a live session keeps full state.
-- Website HTTP Basic-Auth login prompts aren't auto-filled or shown as a dialog (only the proxy's own auth challenge is handled automatically); OAuth/cookie-based logins work normally since they don't use HTTP Basic Auth.
+- Website HTTP Basic-Auth login prompts aren't shown as a dialog -- the app always answers auth challenges with the proxy's credentials (since virtually all of them are the proxy's own), so a genuine destination-site Basic-Auth prompt (rare in 2026) would just fail rather than ask the user. OAuth/cookie-based logins work normally since they don't use HTTP Basic Auth.
 - In-page camera/microphone access (`getUserMedia`) is denied by default; taking a photo for a `<input type=file>` upload still works via the system camera app.
 - The proxy's public TLS port (3129) ships with a self-signed certificate generated on first container start; replace it with a real certificate for any deployment reachable over an untrusted network (see [docs/deployment-docker.md](docs/deployment-docker.md)).

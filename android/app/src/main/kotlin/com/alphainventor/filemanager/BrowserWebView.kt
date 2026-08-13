@@ -32,6 +32,8 @@ class BrowserWebView(
     context: Context,
     val tabId: String,
     private val callbacks: TabCallbacks,
+    private val proxyUsername: String? = null,
+    private val proxyPassword: String? = null,
 ) {
     val webView: WebView = WebView(context)
 
@@ -142,12 +144,18 @@ class BrowserWebView(
             host: String?,
             realm: String?,
         ) {
-            // Proxy credentials are supplied automatically (see ProxyManager,
-            // which verifies them before any page is allowed to load). A
-            // challenge reaching here means either the proxy rejected them
-            // after all, or a destination site is using HTTP Basic Auth,
-            // which we don't auto-fill.
-            handler.cancel()
+            // This fires for both origin-server 401s and our own proxy's 407
+            // (androidx.webkit routes both through the same callback). Since
+            // every request in this app goes through our proxy, a challenge
+            // reaching here is virtually always the proxy's -- supply its
+            // credentials. Worst case for a real site using HTTP Basic Auth:
+            // the wrong credentials are tried and it fails normally, same as
+            // cancelling would have.
+            if (proxyUsername != null && proxyPassword != null) {
+                handler.proceed(proxyUsername, proxyPassword)
+            } else {
+                handler.cancel()
+            }
         }
     }
 

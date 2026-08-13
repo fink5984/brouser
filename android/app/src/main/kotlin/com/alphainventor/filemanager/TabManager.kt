@@ -32,6 +32,15 @@ class TabManager(
 
     private val liveWebViews = LinkedHashMap<String, BrowserWebView>(16, 0.75f, true)
 
+    private var proxyUsername: String? = null
+    private var proxyPassword: String? = null
+
+    /** Must be called (with the current device config) before any tab is created. */
+    fun setProxyCredentials(username: String, password: String) {
+        proxyUsername = username
+        proxyPassword = password
+    }
+
     var onError: ((tabId: String, BrowserErrorType, String) -> Unit)? = null
     var onDownloadRequested: ((url: String, ua: String, disposition: String, mime: String, length: Long) -> Unit)? = null
     var onShowFileChooser: ((ValueCallback<Array<Uri>>, WebChromeClient.FileChooserParams) -> Boolean)? = null
@@ -85,7 +94,7 @@ class TabManager(
 
     private fun getOrCreateWebView(tabId: String): BrowserWebView {
         liveWebViews[tabId]?.let { return it }
-        val created = BrowserWebView(context, tabId, this)
+        val created = BrowserWebView(context, tabId, this, proxyUsername, proxyPassword)
         liveWebViews[tabId] = created
         evictIfNeeded()
         return created

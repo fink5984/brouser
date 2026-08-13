@@ -135,6 +135,7 @@ class BrowserViewModel(
     private suspend fun applyConfig(config: DeviceConfig) {
         deviceConfig = config
         _browserSettings.value = config.browser
+        tabManager.setProxyCredentials(config.proxy.username, config.proxy.password)
         verifyProxy(config)
     }
 
