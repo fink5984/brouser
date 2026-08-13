@@ -1,0 +1,19 @@
+# Copy to local.properties (gitignored) and fill in.
+
+# Path to the Android SDK. Android Studio fills this in automatically; set
+# it by hand if you're using the command line only.
+sdk.dir=C:\\Users\\you\\AppData\\Local\\Android\\Sdk
+
+# Backend base URL. Use 10.0.2.2 to reach your host machine's localhost from
+# the Android emulator; use your real domain for a physical device / release.
+CONFIG_BASE_URL=http://10.0.2.2:4000
+
+# Must match DEVICE_TOKEN in the backend's .env -- this is the one shared
+# secret that identifies this app install to the backend.
+DEVICE_TOKEN=
+
+# Release signing (only needed for release builds)
+RELEASE_STORE_FILE=
+RELEASE_STORE_PASSWORD=
+RELEASE_KEY_ALIAS=
+RELEASE_KEY_PASSWORD=

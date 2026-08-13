@@ -1,0 +1,26 @@
+# Root-level env (Docker Compose)
+.env
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/*.log
+backend/coverage/
+
+# Android
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+android/local.properties
+android/*.iml
+android/.idea/
+android/captures/
+android/.cxx/
+android/*.jks
+android/*.keystore
+
+# OS
+.DS_Store
+Thumbs.db

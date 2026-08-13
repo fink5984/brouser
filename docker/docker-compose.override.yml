@@ -1,0 +1,13 @@
+# Automatically merged by `docker compose` when this file sits next to
+# docker-compose.yml. Publishes ports on localhost for local development and
+# manual testing so you don't need a real domain or TLS certs to iterate.
+# Do not use this file in production.
+services:
+  backend:
+    ports:
+      - "4000:4000"
+
+  squid:
+    ports:
+      - "3128:3128"
+      - "3129:3129"

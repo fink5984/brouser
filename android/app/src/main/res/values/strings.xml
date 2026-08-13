@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">File Manager</string>
+    <string name="address_bar_hint">Search or enter address</string>
+    <string name="new_tab">New tab</string>
+    <string name="close_tab">Close tab</string>
+    <string name="history">History</string>
+    <string name="downloads">Downloads</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="proxy_unavailable_title">Can\'t connect to the browsing service</string>
+    <string name="proxy_unavailable_body">Check your connection and try again.</string>
+    <string name="retry">Retry</string>
+    <string name="ssl_error_title">This connection is not private</string>
+    <string name="ssl_error_body">The site\'s security certificate could not be verified. For your safety, this page has been blocked.</string>
+    <string name="dns_error_title">Site can\'t be reached</string>
+    <string name="generic_error_title">Something went wrong</string>
+</resources>

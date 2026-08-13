@@ -1,0 +1,80 @@
+name: managed-browser
+
+networks:
+  internal:
+    driver: bridge
+    internal: true
+  edge:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  squid_certs:
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      PORT: 4000
+      HOST: 0.0.0.0
+      NODE_ENV: production
+    networks:
+      - internal
+      - edge
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>{if(r.status!==200)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    # No `ports:` mapping -- only reachable via Caddy (edge network) and by
+    # Squid's auth helper (internal network).
+
+  squid:
+    build:
+      context: ../proxy
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:4000/internal/v1/proxy/authenticate
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET}
+      PROXY_PUBLIC_HOST: ${PROXY_PUBLIC_HOST}
+    depends_on:
+      - backend
+    networks:
+      - internal
+    volumes:
+      - squid_certs:/etc/squid/certs
+    ports:
+      # Only the TLS-secured proxy port is published publicly. Plain 3128
+      # stays internal-only (dev convenience override publishes it too).
+      - "3129:3129"
+    healthcheck:
+      test: ["CMD", "squidclient", "-h", "127.0.0.1", "-p", "3128", "mgr:info"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    networks:
+      - edge
