@@ -109,10 +109,12 @@ class BrowserWebView(
         }
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+            android.util.Log.d("BrowserAuth", "onPageStarted url=$url")
             callbacks.onPageStarted(tabId, url)
         }
 
         override fun onPageFinished(view: WebView, url: String) {
+            android.util.Log.d("BrowserAuth", "onPageFinished url=$url")
             callbacks.onPageFinished(tabId, url)
         }
 
@@ -128,6 +130,11 @@ class BrowserWebView(
             request: WebResourceRequest,
             error: WebResourceError,
         ) {
+            android.util.Log.d(
+                "BrowserAuth",
+                "onReceivedError isMainFrame=${request.isForMainFrame} url=${request.url} " +
+                    "code=${error.errorCode} desc=${error.description}",
+            )
             if (!request.isForMainFrame) return
             val type = when (error.errorCode) {
                 ERROR_HOST_LOOKUP -> BrowserErrorType.DNS_ERROR
@@ -144,6 +151,10 @@ class BrowserWebView(
             host: String?,
             realm: String?,
         ) {
+            android.util.Log.d(
+                "BrowserAuth",
+                "onReceivedHttpAuthRequest host=$host realm=$realm hasCreds=${proxyUsername != null}",
+            )
             // This fires for both origin-server 401s and our own proxy's 407
             // (androidx.webkit routes both through the same callback). Since
             // every request in this app goes through our proxy, a challenge
