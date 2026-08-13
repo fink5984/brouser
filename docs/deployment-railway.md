@@ -19,6 +19,12 @@ Keep these somewhere safe — you'll need `DEVICE_TOKEN` again for the Android b
 3. Environment variables (Railway → Variables):
    ```
    NODE_ENV=production
+   # Railway's private networking (*.railway.internal) is IPv6-only. The
+   # default 0.0.0.0 bind is IPv4-only, which makes the backend unreachable
+   # from other services on the private network (e.g. Squid's auth helper)
+   # even though its public domain still works. Bind the IPv6 wildcard
+   # instead -- it also accepts IPv4 connections.
+   HOST=::
    DEVICE_TOKEN=<generated above>
    INTERNAL_API_SECRET=<generated above>
    PROXY_USERNAME=device
