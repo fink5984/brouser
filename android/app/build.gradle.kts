@@ -47,14 +47,10 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
         }
         create("staging") {
             initWith(getByName("debug"))
             isDebuggable = true
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = "-staging"
             matchingFallbacks += listOf("debug")
         }
         release {
