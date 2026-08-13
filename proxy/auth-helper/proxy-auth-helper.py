@@ -26,6 +26,7 @@ TIMEOUT_SECONDS = 4
 def check_credentials(username: str, password: str) -> bool:
     if not INTERNAL_SECRET:
         sys.stderr.write("proxy-auth-helper: INTERNAL_API_SECRET is not set\n")
+        sys.stderr.flush()
         return False
 
     payload = json.dumps({"username": username, "password": password}).encode("utf-8")
@@ -41,10 +42,25 @@ def check_credentials(username: str, password: str) -> bool:
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT_SECONDS) as resp:
             if resp.status != 200:
+                sys.stderr.write(
+                    f"proxy-auth-helper: backend returned HTTP {resp.status} for {BACKEND_URL}\n"
+                )
+                sys.stderr.flush()
                 return False
             body = json.loads(resp.read().decode("utf-8"))
             return bool(body.get("ok") is True)
-    except (urllib.error.URLError, TimeoutError, ValueError, json.JSONDecodeError):
+    except urllib.error.HTTPError as e:
+        detail = ""
+        try:
+            detail = e.read().decode("utf-8", errors="replace")[:200]
+        except Exception:
+            pass
+        sys.stderr.write(f"proxy-auth-helper: HTTPError {e.code} from {BACKEND_URL}: {detail}\n")
+        sys.stderr.flush()
+        return False
+    except (urllib.error.URLError, TimeoutError, ValueError, json.JSONDecodeError) as e:
+        sys.stderr.write(f"proxy-auth-helper: {type(e).__name__} calling {BACKEND_URL}: {e}\n")
+        sys.stderr.flush()
         return False
 
 
